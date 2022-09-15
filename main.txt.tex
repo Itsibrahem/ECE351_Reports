@@ -1,0 +1,317 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,english]{babel}
+\usepackage{alphabeta} 
+\usepackage[pdftex]{graphicx}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\linespread{1.06}
+\setlength{\parskip}{8pt plus2pt minus2pt}
+\widowpenalty 10000
+\clubpenalty 10000
+\newcommand{\eat}[1]{}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\usepackage[official]{eurosym}
+\usepackage{enumitem}
+\setlist{nolistsep,noitemsep}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cite}
+\usepackage{lipsum}
+
+%===========================================================
+\usepackage{graphicx}
+\usepackage{listings}
+
+\renewcommand\lstlistingname{Source Code}
+
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+   backgroundcolor=\color{backcolour},   
+   commentstyle=\color{codegreen},
+   keywordstyle=\color{codeblue},
+   numberstyle=\tiny\color{codegray},
+   stringstyle=\color{codegreen},
+   basicstyle=\ttfamily\footnotesize,
+   breakatwhitespace=false,         
+   breaklines=true,                 
+   captionpos=b,                    
+   keepspaces=true,                 
+   numbers=left,                    
+   numbersep=5pt,                  
+   showspaces=false,                
+   showstringspaces=false,
+   showtabs=false,                  
+   tabsize=2
+   xleftmargin=10pt
+}
+\lstset{style=mystyle}
+
+%===========================================================
+\begin{document}
+%===========================================================
+\begin{titlepage}
+\begin{center}
+% Top 
+\includegraphics[width=0.55\textwidth]{cut-logo-en}~\\[2cm]
+% Title
+\HRule \\[0.4cm]
+{ \LARGE 
+  \textbf{Lab 3 Project Report for ECE 351}\\[0.4cm]
+  \emph{Discrete Convolution}\\[0.4cm]
+}
+\HRule \\[1.5cm]
+% Author
+{ \large
+  Ibrahem Alobaid \\[0.1cm]
+  September 15, 2022\\[0.1cm]
+  %#\texttt{user@cut.ac.cy}
+}
+\vfill
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]\textsc{\large Department of Electrical Engineering,\\Computer Engineering \& Informatics}\\[0.4cm]
+% Bottom
+
+\end{center}
+\end{titlepage}
+%\begin{abstract}
+%\lipsum[1-2]
+%\addtocontents{toc}{\protect\thispagestyle{empty}}
+%\end{abstract}
+\newpage
+%===========================================================
+\tableofcontents
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+\newpage
+\setcounter{page}{1}
+%===========================================================
+%===========================================================
+\section{Introduction}\label{sec:intro}
+This lab purpose was to make us familiar with convolution and its properties using Python.
+%===========================================================
+
+\section{Equations}\label{sec:lit-rev}
+Using the step and ramp functions we have defined in \textbf{Lab 2} we created the following signals:
+\begin{equation}
+    f_1(t) = u(t-2)-u(t-9)
+\end{equation}
+\begin{equation}
+    f_2(t) = e^{-t}u(t)
+\end{equation}
+\begin{equation}
+    f_3(t) = r(t-2)[u(t-2)-u(t-3)] + r(4-t)[u(t-3) - u(t-4)]
+\end{equation}
+%===========================================================
+\section{Methodology and Results}\label{sec:meth}
+\begin{itemize}
+    \item
+    Part 1:\\
+    
+    \\For the first part, we created three user-defined functions to use for the other part in this lab.
+    
+\begin{lstlisting}[language=Python, caption={User-defined functions}, label={lst:code}, mathescape=true, breaklines=true]
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.signal as sig
+
+plt.rcParams['font.size'] = 14 
+
+steps = 1e-2
+
+def r(t):
+    y = np.zeros(t.shape)
+    
+    for i in range(len(t)):
+        if t[i] <= 0:
+            y[i] = 0
+        else:
+            y[i] = t[i]
+    return y
+
+def u(t):
+    y = np.zeros(t.shape)
+    
+    for i in range(len(t)):
+        if t[i] <= 0:
+            y[i] = 0
+        else:
+            y[i] = 1
+    return y
+# ==================== part 1 - Task 1 ====================
+t = np.arange(0, 20 + steps , steps)
+
+def f1(t):
+    return u(t-2) - u(t-9)
+
+def f2(t):
+    return (np.exp(-t))
+
+def f3(t):
+    return r(t-2) * (u(t-2) - u(t-3)) + r(4-t) * (u(t-3) - u(t-4))
+# ==================== part 1 - Task 2 ====================
+plt.figure(figsize = (10, 7))
+plt.subplot(3 , 1 , 1)
+plt.plot(t , f1(t))
+plt.grid()
+plt.ylabel('f1(t)')
+plt.title('Figure 1')
+ 
+ 
+plt.subplot(3 , 1 , 2)
+plt.plot(t , f2(t))
+plt.grid()
+plt.ylabel('f2(t)')
+ 
+plt.subplot(3 , 1 , 3)
+plt.plot(t , f3(t))
+plt.grid()
+plt.ylabel('f3(t)')
+plt.xlabel('t')
+\end{lstlisting}
+
+    \\The resulting plots of the user-defined functions:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{task2_plot.png}
+\end{figure}
+\clearpage
+%===========================================================
+    \item
+    Part 2:\\
+    
+    \\For this part, we needed to write a code to perform convolution on two functions. We then used scipy.signal.convolve() function to confirm that our user-defined function works appropriately.
+
+\begin{lstlisting}[language=Python, caption={User-defined convolution}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== part 2 - Task 1 ====================
+def my_conv(f1, f2):
+    
+    Nf1 = len(f1) # create an array of length f1
+    Nf2 = len(f2)
+     
+    f1Extended = np.append(f1, np.zeros((1, Nf2-1))) # attach zeros 
+                                                     # to the end of list of size Nf2
+    f2Extended = np.append(f2, np.zeros((1, Nf1-1)))
+     
+    result = np.zeros(f1Extended.shape)
+     
+    for i in range((Nf2 + Nf1)-2):
+        result[i] = 0 # initialize list
+          
+        for j in range(Nf1):
+            if ((i-j)+1 > 0):
+                try:
+                    result[i] += f1Extended[j] * f2Extended[i-j+1]
+                except:
+                    print(i-j)
+# The nested for loop should perform a summition of the productes  
+# of f1 and f2 extended list and store the result in the "result" array.                      
+    return result
+    
+# ==================== part 2 - Task 2 ====================
+Nt = len(t)
+tExtended = np.arange(0, 2*t[Nt-1], steps)         
+ 
+convf1_f2 = my_conv(f1(t), f2(t))
+ 
+ 
+plt.figure(figsize = (10, 7))
+plt.subplot(3 , 1 , 1)
+plt.plot(tExtended , convf1_f2)
+plt.grid()
+plt.ylabel('convf1_f2')
+plt.title('Figure 2')
+
+# ==================== part 2 - Task 3 ====================
+convf2_f3 = my_conv(f2(t), f3(t))
+ 
+plt.subplot(3 , 1 , 2)
+plt.plot(tExtended , convf2_f3)
+plt.grid()
+plt.ylabel('convf2_f3')
+
+# ==================== part 2 - Task 4 ====================
+convf1_f3 = my_conv(f1(t), f3(t))
+ 
+plt.subplot(3 , 1 , 3)
+plt.plot(tExtended , convf1_f3)
+plt.grid()
+plt.ylabel('convf1_f3')
+plt.xlabel('t')
+\end{lstlisting}
+
+    The resulting plots of the user-defined convolution function:\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{part2_a.png}
+\end{figure}\textbf{}
+\clearpage
+
+\begin{lstlisting}[language=Python, caption={Convolution using scipy.signal.convolve()}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== part 2b (2) ====================
+plt.figure(figsize = (10, 7))
+plt.subplot(3 , 1 , 1)
+plt.plot(tExtended , sig.convolve(f1(t), f2(t)))
+plt.grid()
+plt.ylabel('v_convf1_f2')
+plt.title('Figure 2')
+ 
+# ==================== part 2b (3) ====================
+plt.subplot(3 , 1 , 2)
+plt.plot(tExtended , sig.convolve(f2(t), f3(t)))
+plt.grid()
+plt.ylabel('v_convf2_f3')
+ 
+# ==================== part 2b (4) ====================
+plt.subplot(3 , 1 , 3)
+plt.plot(tExtended , sig.convolve(f1(t), f3(t)))
+plt.grid()
+plt.ylabel('v_convf1_f3')
+plt.xlabel('t')
+
+plt.show()
+\end{lstlisting}
+
+    The resulting plots are similar to the one we got from our user-defined convolution function which verify our code.\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{part2_b.png}
+\end{figure}\textbf{}
+
+\end{itemize}
+%===========================================================
+\section{Error Analysis}\label{sec:res}
+    For this lab, the first part was straight forward, however, defining the convolution function was difficult. Thus, our TA offered help by giving us the code and explaining it for us. 
+%===========================================================
+\section{Questions}\label{sec:res}
+\begin{enumerate}
+    \item
+    Did you work alone or with classmates on this lab? If you collaborated to get to the solution,
+    what did that process look like?\\
+    \\Worked alone, but got help from the TA.\\
+    
+    \item
+    What was the most difficult part of this lab for you, and what did your problem-solving
+    process look like?\\
+    \\Defining the nested loop in the convolution function, which I tried to implement by thinking about how convolution is defined.\\
+    
+    \item
+    Did you approach writing the code with analytical or graphical convolution in mind? Why
+    did you chose this approach?\\
+    \\Graphical, our TA explained how convolution works by convolving two simple functions together. \\
+    
+    \item
+    Leave any feedback on the clarity of lab tasks, expectations, and deliverables.\\
+    \\The lab hand-out was very clear and precise.
+    
+\end{enumerate}
+%===========================================================   
+\section{Conclusion}\label{sec:res}
+    In this lab, we have familiarized ourselves with how convolution works in Python by creating a user-defined function, and by using the included function convolve from the scipy.signal.convolve() package.
+%\lipsum[7-8]\cite{knuthwebsite}
+%===========================================================
+%===========================================================
+\bibliographystyle{ieeetr}
+\bibliography{refs}
+\end{document} 
