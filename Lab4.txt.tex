@@ -1,0 +1,278 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,english]{babel}
+\usepackage{alphabeta} 
+\usepackage[pdftex]{graphicx}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\linespread{1.06}
+\setlength{\parskip}{8pt plus2pt minus2pt}
+\widowpenalty 10000
+\clubpenalty 10000
+\newcommand{\eat}[1]{}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\usepackage[official]{eurosym}
+\usepackage{enumitem}
+\setlist{nolistsep,noitemsep}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cite}
+\usepackage{lipsum}
+
+%===========================================================
+\usepackage{graphicx}
+\usepackage{listings}
+
+\renewcommand\lstlistingname{Source Code}
+
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+   backgroundcolor=\color{backcolour},   
+   commentstyle=\color{codegreen},
+   keywordstyle=\color{codeblue},
+   numberstyle=\tiny\color{codegray},
+   stringstyle=\color{codegreen},
+   basicstyle=\ttfamily\footnotesize,
+   breakatwhitespace=false,         
+   breaklines=true,                 
+   captionpos=b,                    
+   keepspaces=true,                 
+   numbers=left,                    
+   numbersep=5pt,                  
+   showspaces=false,                
+   showstringspaces=false,
+   showtabs=false,                  
+   tabsize=2
+   xleftmargin=10pt
+}
+\lstset{style=mystyle}
+
+%===========================================================
+\begin{document}
+%===========================================================
+\begin{titlepage}
+\begin{center}
+% Top 
+\includegraphics[width=0.55\textwidth]{cut-logo-en}~\\[2cm]
+% Title
+\HRule \\[0.4cm]
+{ \LARGE 
+  \textbf{Lab 4 Project Report for ECE 351}\\[0.4cm]
+  \emph{System Step Response Using Convolution}\\[0.4cm]
+}
+\HRule \\[1.5cm]
+% Author
+{ \large
+  Ibrahem Alobaid \\[0.1cm]
+  September 22, 2022\\[0.1cm]
+  %#\texttt{user@cut.ac.cy}
+}
+\vfill
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]\textsc{\large Department of Electrical Engineering,\\Computer Engineering \& Informatics}\\[0.4cm]
+% Bottom
+
+\end{center}
+\end{titlepage}
+%\begin{abstract}
+%\lipsum[1-2]
+%\addtocontents{toc}{\protect\thispagestyle{empty}}
+%\end{abstract}
+\newpage
+%===========================================================
+\tableofcontents
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+\newpage
+\setcounter{page}{1}
+%===========================================================
+%===========================================================
+\section{Introduction}\label{sec:intro}
+    This lab purpose was to make us familiar with how to use convolution to compute a system's step response.
+%===========================================================
+
+\section{Equations}\label{sec:lit-rev}
+    The following signals $(h_1(t), h_2(t), h_3(t))$ were defined and plotted. We have also used the defined signals to convolve them with a step function (using the convolution function we defined in \textbf{Lab 3} and by solving the convolution integral).
+
+\begin{equation}
+    h_1(t) = e^{-2t}[u(t) - u(t-3)]
+\end{equation}
+\begin{equation}
+    h_2(t) = u(t-2) - u(t-6)
+\end{equation}
+\begin{equation}
+    h_3(t) = 
+\end{equation}
+
+    \\ Hand-calculated step response of the three transfer function:
+    
+\begin{equation}
+    h_1(t)*u(t) = \frac{1}{2}(1-e^{-2t})u(t) - \frac{1}{2}(1-e^{-2(t-3)})u(t-3)
+\end{equation}
+\begin{equation}
+    h_2(t)*u(t) = (t-2)u(t-2)-(t-6)u(t-6)
+\end{equation}
+\begin{equation}
+    h_3(t)*u(t) = \frac{1}{w}sin(wt)u(t)
+\end{equation}  
+%===========================================================
+\section{Methodology and Results}\label{sec:meth}
+\begin{itemize}
+    \item
+    Part 1:\\
+    
+    \\For the first part, we created three signals (as shown in equation 1, 2, and 3) as user-defined functions and plotted them.
+    
+\begin{lstlisting}[language=Python, caption={User-defined functions}, label={lst:code}, mathescape=true, breaklines=true]
+t = np.arange(-10, 10 + steps , steps)
+
+f = 0.25
+w = 2 * math.pi * f
+
+def h1(t):
+    return (np.exp(-2*t)) * (u(t) - u(t-3))
+
+def h2(t):
+    return u(t-2) - u(t-6)
+
+def h3(t):
+    return np.cos(w*t) * u(t)
+    
+plt.figure(figsize = (10, 7))
+plt.subplot(3 , 1 , 1)
+plt.plot(t , h1(t))
+plt.grid()
+plt.ylabel('h1(t)')
+plt.title('Figure 1')
+ 
+plt.subplot(3 , 1 , 2)
+plt.plot(t , h2(t))
+plt.grid()
+plt.ylabel('h2(t)')
+ 
+plt.subplot(3 , 1 , 3)
+plt.plot(t , h3(t))
+plt.grid()
+plt.ylabel('h3(t)')
+plt.xlabel('t')
+\end{lstlisting}
+
+    \\The resulting plots of $(h_1(t), h_2(t), h_3(t))$:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{part1.png}
+\end{figure}
+
+%===========================================================
+    \item
+    Part 2:\\
+    
+    \\For this part, we used the convolution function we defined in \textbf{Lab 3} to plot the step response of $(h_1(t), h_2(t), h_3(t))$. We have also plotted the step response of the three functions by solving the convolution integral (as shown in equations 4, 5, and 6).
+
+\begin{lstlisting}[language=Python, caption={Step response using user-defined function}, label={lst:code}, mathescape=true, breaklines=true]
+def my_conv(h1, h2):
+    
+    Nh1 = len(h1)
+    Nh2 = len(h2)
+     
+    h1Extended = np.append(h1, np.zeros((1, Nh2-1))) 
+    h2Extended = np.append(h2, np.zeros((1, Nh1-1)))
+     
+    result = np.zeros(h1Extended.shape)
+     
+    for i in range((Nh2 + Nh1)-2): 
+        result[i] = 0  
+          
+        for j in range(Nh1): 
+            if ((i-j)+1 > 0): 
+                try: 
+                    result[i] += h1Extended[j] * h2Extended[i-j+1]
+                except:
+                    print(i-j)                 
+    return result
+
+y1 = my_conv(h1(t), u(t)) 
+y2 = my_conv(h2(t), u(t)) 
+y3 = my_conv(h3(t), u(t))
+
+tExtended = np.arange(2*t[0], 2*t[len(t)-1]+steps, steps)
+
+plt.figure(figsize = (10, 7))
+plt.subplot(3 , 1 , 1)
+plt.plot(tExtended, y1)
+plt.grid()
+plt.ylabel('Responce1')
+plt.title('Figure 2')
+
+plt.subplot(3 , 1 , 2)
+plt.plot(tExtended, y2)
+plt.grid()
+plt.ylabel('Responce2')
+
+plt.subplot(3 , 1 , 3)
+plt.plot(tExtended, y3)
+plt.grid()
+plt.ylabel('Responce3')
+plt.xlabel('t')
+\end{lstlisting}
+\clearpage
+
+    The resulting plots of the user-defined convolution function:\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{part2(a).png}
+\end{figure}\textbf{}
+
+\begin{lstlisting}[language=Python, caption={Step response by hand}, label={lst:code}, mathescape=true, breaklines=true]
+y1c =  0.5*(1-np.exp(-2*tExtended))*u(tExtended)-0.5*(1-np.exp(-2*(tExtended-3)))*u(tExtended-3)
+y2c = ((tExtended-2) * u(tExtended-2)) - ((tExtended-6) * u(tExtended-6))
+y3c = (1 / w) * (np.sin(w*tExtended) * u(tExtended))
+
+plt.figure( figsize = (10 , 7))
+plt.subplot(3, 1, 1)
+plt.plot(tExtended, y1c)
+plt.grid()
+plt.ylabel('Responce1')
+plt.title('Step Respnoce (Hand Calculated)')
+
+plt.subplot(3, 1, 2)
+plt.plot(tExtended, y2c)
+plt.grid()
+plt.ylabel('Responce2')
+
+plt.subplot(3, 1, 3)
+plt.plot(tExtended, y3c)
+plt.grid()
+plt.ylabel('Responce3')
+plt.xlabel('t')
+
+plt.show()
+\end{lstlisting}
+\clearpage
+
+    The resulting plots of the hand calculated convolution:\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{part2(b).png}
+\end{figure}\textbf{}
+
+\end{itemize}
+%===========================================================
+
+\section{Questions}\label{sec:res}
+\begin{enumerate}
+
+    \item
+    Leave any feedback on the clarity of lab tasks, expectations, and deliverables.\\
+    \\The lab procedure and purpose were very clear.
+\end{enumerate}
+%===========================================================   
+\section{Conclusion}\label{sec:res}
+    In this lab, we have familiarized ourselves with using convolution to compute the step response of a transfer function.
+%\lipsum[7-8]\cite{knuthwebsite}
+%===========================================================
+%===========================================================
+\bibliographystyle{ieeetr}
+\bibliography{refs}
+\end{document} 
