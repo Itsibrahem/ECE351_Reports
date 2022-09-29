@@ -1,0 +1,213 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,english]{babel}
+\usepackage{alphabeta} 
+\usepackage[pdftex]{graphicx}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\linespread{1.06}
+\setlength{\parskip}{8pt plus2pt minus2pt}
+\widowpenalty 10000
+\clubpenalty 10000
+\newcommand{\eat}[1]{}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\usepackage[official]{eurosym}
+\usepackage{enumitem}
+\setlist{nolistsep,noitemsep}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cite}
+\usepackage{lipsum}
+
+%===========================================================
+\usepackage{graphicx}
+\usepackage{listings}
+
+\renewcommand\lstlistingname{Source Code}
+
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+   backgroundcolor=\color{backcolour},   
+   commentstyle=\color{codegreen},
+   keywordstyle=\color{codeblue},
+   numberstyle=\tiny\color{codegray},
+   stringstyle=\color{codegreen},
+   basicstyle=\ttfamily\footnotesize,
+   breakatwhitespace=false,         
+   breaklines=true,                 
+   captionpos=b,                    
+   keepspaces=true,                 
+   numbers=left,                    
+   numbersep=5pt,                  
+   showspaces=false,                
+   showstringspaces=false,
+   showtabs=false,                  
+   tabsize=2
+   xleftmargin=10pt
+}
+\lstset{style=mystyle}
+
+%===========================================================
+\begin{document}
+%===========================================================
+\begin{titlepage}
+\begin{center}
+% Top 
+\includegraphics[width=0.55\textwidth]{cut-logo-en}~\\[2cm]
+% Title
+\HRule \\[0.4cm]
+{ \LARGE 
+  \textbf{Lab 5 Project Report for ECE 351}\\[0.4cm]
+  \emph{Step and Impulse Response of a RLC Band Pass Filter}\\[0.4cm]
+}
+\HRule \\[1.5cm]
+% Author
+{ \large
+  Ibrahem Alobaid \\[0.1cm]
+  September 29, 2022\\[0.1cm]
+  %#\texttt{user@cut.ac.cy}
+}
+\vfill
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]\textsc{\large Department of Electrical Engineering,\\Computer Engineering \& Informatics}\\[0.4cm]
+% Bottom
+
+\end{center}
+\end{titlepage}
+%\begin{abstract}
+%\lipsum[1-2]
+%\addtocontents{toc}{\protect\thispagestyle{empty}}
+%\end{abstract}
+\newpage
+%===========================================================
+\tableofcontents
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+\newpage
+\setcounter{page}{1}
+%===========================================================
+%===========================================================
+\section{Introduction}\label{sec:intro}
+    In this lab, our purpose was to use Laplace transforms to find the response of an RLC bandpass filter to impulse and step inputs. This was accomplished by first finding the transfer function $H(s)$ of the RLC bandpass filter, then finding the impulse response $h(t)$ which was done in the pre-lab.
+%===========================================================
+
+\section{Equations}\label{sec:lit-rev}
+    The final value theorem for the step response $H(s)u(s)$ is shown in \textbf{Methodology and Results} section part 2(2).
+
+%===========================================================
+\section{Methodology and Results}\label{sec:meth}
+\begin{itemize}
+    \item
+    Part 1:\\
+    
+    \\For the first part, we plotted the impulse response of the RLC bandpass filter using two methods.\\
+
+\begin{enumerate}
+    \item 
+    Creating a user-defined function for the time-domain impulse response that we found in the pre-lab.
+    
+\begin{lstlisting}[language=Python, caption={User-defined impulse response function}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== part 1 - Task 1 ====================
+
+R = 1000
+L = 27e-3
+C = 100e-9
+
+t = np.arange(0 , 1.2e-3 + steps , steps)
+
+def h(R, L, C, t):
+    
+    w = (1/2) * np.sqrt((1/(R*C))**2 -4*(1/(np.sqrt(L*C)))**2 + 0j) * u(t)
+    alpha = -1/(2*R*C)
+    
+    p = alpha + w
+    
+    g = 1/(R*C) * p
+    g_abs = np.abs(g)
+    g_ang = np.angle(g)
+
+    y = (g_abs/np.abs(w)) * np.exp(alpha * t) * np.sin(np.abs(w) * t + g_ang)
+
+    return y
+\end{lstlisting}
+
+\clearpage
+
+    \item
+    Using scipy.signal.impulse() with the s-domain transfer function from the pre-lab.
+
+\begin{lstlisting}[language=Python, caption={impulse response using scipy.signal.impulse()}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== part 1 - Task 2 ====================
+
+num = [0, 1/(R*C), 0]
+den = [1, 1/(R*C), 1/(C*L)]
+
+tout, yout = sig.impulse((num, den), T = t)
+
+\end{lstlisting}
+
+\end{enumerate}
+
+    \\The resulting plots:\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figure1.png}
+\end{figure}
+\clearpage
+
+%===========================================================
+    \item
+    Part 2:\\
+
+\begin{enumerate}
+    \item
+    Plot of $H(s)$ using scipy.signal.step()
+
+
+\begin{lstlisting}[language=Python, caption={impulse response using scipy.signal.step()}, label={lst:code}, mathescape=true, breaklines=true]
+# ======================== part 2 =========================
+num = [0, 1/(R*C), 0]
+den = [1, 1/(R*C), 1/(C*L)]
+
+tout, yout = sig.step((num, den), T = t)
+\end{lstlisting}
+
+    \\The resulting plot:\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figure2.png}
+\end{figure}\textbf{}
+
+    \item
+    The final value theorem for the step response $H(s)u(s)$ in the Laplace domain:\\
+    
+    $$\lim_{t \to \infty}h(t)u(t) = \lim_{s \to 0} sH(s)u(s) = \lim_{s \to 0} s * \frac{(\frac{1}{RC}s)}{(s^{2} + \frac{1}{RC}s + \frac{1}{LC})} * \frac{1}{s} = 0$$
+
+\end{enumerate}
+
+\end{itemize}
+\clearpage
+%===========================================================
+
+\section{Questions}\label{sec:res}
+\begin{enumerate}
+    
+    \item
+    Explain the result of the Final Value Theorem from Part 2 Task 2 in terms of the physical
+    circuit components.\\
+    \\As can be seen in the \textbf{Methodology and Results} section part 2(2), when applying the final value theorem to the step response, we are evaluating $s \to 0$. Figure 2 demonstrate our result as the capacitor in the RLC bandpass filter initially has energy then it starts discharging.\\
+
+    \item
+    Leave any feedback on the clarity of lab tasks, expectations, and deliverables.\\
+    \\The lab instructions were clear and precise. 
+\end{enumerate}
+%===========================================================   
+\section{Conclusion}\label{sec:res}
+    In this lab, we used Laplace transforms to find the impulse and step response of an RLC bandpass filter. We have also applied the final value theorem to the step response function and learned how it behaves. 
+%\lipsum[7-8]\cite{knuthwebsite}
+%===========================================================
+%===========================================================
+\bibliographystyle{ieeetr}
+\bibliography{refs}
+\end{document} 
