@@ -1,0 +1,335 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,english]{babel}
+\usepackage{alphabeta} 
+\usepackage[pdftex]{graphicx}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\linespread{1.06}
+\setlength{\parskip}{8pt plus2pt minus2pt}
+\widowpenalty 10000
+\clubpenalty 10000
+\newcommand{\eat}[1]{}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\usepackage[official]{eurosym}
+\usepackage{enumitem}
+\setlist{nolistsep,noitemsep}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cite}
+\usepackage{lipsum}
+
+%===========================================================
+\usepackage{graphicx}
+\usepackage{listings}
+
+\renewcommand\lstlistingname{Source Code}
+
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+   backgroundcolor=\color{backcolour},   
+   commentstyle=\color{codegreen},
+   keywordstyle=\color{codeblue},
+   numberstyle=\tiny\color{codegray},
+   stringstyle=\color{codegreen},
+   basicstyle=\ttfamily\footnotesize,
+   breakatwhitespace=false,         
+   breaklines=true,                 
+   captionpos=b,                    
+   keepspaces=true,                 
+   numbers=left,                    
+   numbersep=5pt,                  
+   showspaces=false,                
+   showstringspaces=false,
+   showtabs=false,                  
+   tabsize=2
+   xleftmargin=10pt
+}
+\lstset{style=mystyle}
+
+%===========================================================
+\begin{document}
+%===========================================================
+\begin{titlepage}
+\begin{center}
+% Top 
+\includegraphics[width=0.55\textwidth]{cut-logo-en}~\\[2cm]
+% Title
+\HRule \\[0.4cm]
+{ \LARGE 
+  \textbf{Lab 7 Project Report for ECE 351}\\[0.4cm]
+  \emph{Block Diagrams and System Stability}\\[0.4cm]
+}
+\HRule \\[1.5cm]
+% Author
+{ \large
+  Ibrahem Alobaid \\[0.1cm]
+  October 13, 2022\\[0.1cm]
+  %#\texttt{user@cut.ac.cy}
+}
+\vfill
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]\textsc{\large Department of Electrical Engineering,\\Computer Engineering \& Informatics}\\[0.4cm]
+% Bottom
+
+\end{center}
+\end{titlepage}
+%\begin{abstract}
+%\lipsum[1-2]
+%\addtocontents{toc}{\protect\thispagestyle{empty}}
+%\end{abstract}
+\newpage
+%===========================================================
+\tableofcontents
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+\newpage
+\setcounter{page}{1}
+%===========================================================
+%===========================================================
+\section{Introduction}\label{sec:intro}
+    In this lab, our purpose was to familiarize ourselves with Laplace-domain block diagrams and to use the transfer function factored form to determine a system stability. 
+%===========================================================
+
+\section{Equations}\label{sec:lit-rev}
+
+\begin{figure}[h]
+    \centering
+    
+    \includegraphics[width=0.6\textwidth]{block_diagram.png}
+\end{figure}\textbf{}
+
+\begin{equation}
+    G(s) = \frac{s+9}{(s^2-6s-16)(s+4)}
+\end{equation}
+
+\begin{equation}
+    A(s) = \frac{s+4}{s^2+4s+3}
+\end{equation}
+
+\begin{equation}
+    B(s) = s^2+26s+168
+\end{equation}
+
+%===========================================================
+\section{Methodology and Results}\label{sec:meth}
+
+\begin{itemize}
+
+\item \textbf{Part 1}\\
+\begin{enumerate}
+
+    \item
+    ($G(s), A(s),$ and $B(s)$ in factored form, isolating the poles and zeros)
+    
+    $$G(s) = \frac{s+9}{(s-8)(s+2)(s+4)}$$
+    poles: 8, -2, -4\\
+    zeros: -9
+    
+    $$A(s) = \frac{s+4}{(s+1)(s+3)}$$
+    poles: -1, -3\\
+    zeros: -4
+    
+    $$B(s) = (s+12)(s+14)$$
+    zeros: -12, -14
+
+%===========================================================
+    \item 
+    Using scipy.signal.tf2zpk() to verify our result for \textbf{part1-(1)}.\\
+    
+\begin{lstlisting}[language=Python, caption={using scipy.signal.tf2zpk()}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== part 1 - Task 2 ====================
+numG, denG = [1, 9], [1, -2, -40, -64]
+
+Gz, Gp, Gk = sig.tf2zpk(numG, denG)                  
+print("G(s):", "\nzeros: ", Gz, "\npoles: ", Gp)
+
+numA, denA = [1, 4], [1, 4, 3]
+
+Az, Ap, Ak = sig.tf2zpk(numA, denA)
+print("\nA(s):", "\nzeros: ", Az, "\npoles: ", Ap)
+
+numB = [1, 26, 168]
+
+Bz = np.roots(numB)
+print("\nB(s):", "\nzeros: ", Bz)
+\end{lstlisting}
+    
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{1-task2.jpg}
+\end{figure}\textbf{}
+
+As can be seen from the printed output, the poles and zeros we got using the scipy.signal.tf2zpk() function verifies our result from \textbf{part1-(1)}.\\
+
+%===========================================================
+    \item
+    open-loop transfer function
+    
+    $$H_{o}(s) = \frac{Y(s)}{X(s)} = A(s)G(s) = \frac{s+9}{(s-8)(s+1)(s+2)(s+3)}$$\\
+
+%===========================================================
+    \item 
+    From the expression we found for the open-loop in \textbf{part1-(3)}, we can say that the function response will be unstable since it has a positive pole.
+
+\clearpage
+    
+%===========================================================
+    \item
+    Using scipy.signal.convolve() to expand the numerator and denominator of the open-loop transfer function then plotting its step response.\\
+    
+\begin{lstlisting}[language=Python, caption={open-loop step response using scipy.signal.convolve()}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== part 1 - Task 5 ====================
+numO = sig.convolve(numG, numA)
+denO = sig.convolve(denG, denA)
+
+print("\nOpen-loop transfer function:")
+print("Numerator: ", numO, "\nDenominator: ", denO)
+
+steps = 1e-2
+
+t = np.arange(0 , 2+steps , steps)
+tout, yout = sig.step((numO, denO), T = t)
+\end{lstlisting}
+
+The resulted output and plot:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{1-task5.jpg}
+\end{figure}\textbf{}
+    
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figure1.png}
+\end{figure}\textbf{}
+
+%===========================================================
+    \item
+    As can be seen from the open-loop step response plot in \textbf{part1-(5)}, the response grows exponentially and thus supporting what we concluded from the transfer function poles in \textbf{part1-(4)}; that is the open-loop transfer function is unstable. 
+    
+\end{enumerate}
+\clearpage
+    
+%===========================================================
+\item \textbf{Part 2}\\
+
+\begin{enumerate}
+
+    \item
+    Closed-loop transfer function symbolically in terms of $numG$ and $denG$,
+    
+    $$H_{c}(s) = \frac{Y(s)}{X(s)} = \frac{A(s)G(s)}{1+B(s)G(s)} = \frac{numA \cdot numG}{denA \cdot denG + B \cdot denA \cdot numG}$$\\
+    
+%===========================================================
+    \item 
+    Using scipy.signal.convolve() and scipy.signal.tf2zpk() function to find the transfer function of the closed-loop.\\
+
+\begin{lstlisting}[language=Python, caption={closed-loop transfer function}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== part 2 - Task 2 ====================
+numC = sig.convolve(numA, numG)
+denc0 = sig.convolve(denA, denG)
+denc1 = sig.convolve(denA, numG)
+denc2 = sig.convolve(denc1, numB)
+
+denC = denc0 + denc2
+
+print("\nClosed-loop transfer function:")
+print("Numerator: ", numC, "\nDenominator: ", denC)
+
+Cz, Cp, Ck = sig.tf2zpk(numC, denC)
+print("\nnzeros: ", Cz, "\npoles: ", Cp)
+\end{lstlisting}
+
+The printed output,
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{2-task2.jpg}
+\end{figure}\textbf{}
+
+Thus,
+    $$H_{c}(s) = \frac{(s+9)(s+4)}{(s+5.16-9.52j)(s+5.16+9.52j)(s+6.18)(s+3)(s+1)}$$
+\newline
+
+%===========================================================
+    \item 
+    We can see that the response of the closed-loop transfer function will be stable since all of its poles are negative.\\
+    
+%===========================================================
+    \item Step response of the closed-loop transfer function using scipy.signal.step().\\
+    
+\begin{lstlisting}[language=Python, caption={step response of the closed-loop}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== part 2 - Task 4 ====================
+
+t = np.arange(0 , 10+steps , steps)
+tout, yout = sig.step((numC, denC), T = t)
+\end{lstlisting}
+\clearpage
+
+The resulted plot,
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figure2.png}
+\end{figure}\textbf{}
+%===========================================================
+    \item 
+    The resulted plot from \textbf{part2-4} shows that the closed-loop response is bounded and thus supporting our concluded answer from the transfer function poles in \textbf{part2-3}; that is the system response is stable.
+    
+\end{enumerate}
+\end{itemize}
+
+%===========================================================
+
+\section{Questions}\label{sec:res}
+\begin{enumerate}
+    
+    \item
+    In \textbf{Part 1 Task 5}, why does convolving the factored terms using scipy.signal.convolve() result in the expanded form of the numerator and denominator? Would this work with your user-defined convolution function from \textbf{Lab 3}? Why or why not?\\
+    
+    $$\mathcal{L}\{f(t)*h(t)\} = F(s)H(s)$$
+    
+    Thus, convolution in the s-domain is the same as multiplication and the scipy.signal.convolve() identifies this. On the other hand, our user-defined convolution function from \textbf{lab 3} will not work as it was defined to work in the time-domain.\\\\
+    Testing scipy.signal.convolve() and our user-defined convolution function for the open-loop transfer function, we get
+   
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Q1.jpg}
+\end{figure}\textbf{}
+
+    \item
+    Discuss the difference between the open- and closed-loop systems from \textbf{Part 1} and \textbf{Part 2}. How does stability differ for each case, and why?\\
+    
+    Considering the open-loop from \textbf{part 1}, $H_{o}$ is unstable because it will have a time domain term such that $e^{t\cdot positive pole} u(t)$. Therefore, the other terms will not matter and the system will be unstable.\\
+    
+    Considering the closed-loop from \textbf{part 2}, $H_{c}$ is stable because all of its poles are in the left half of the plane.\\
+    
+    \item
+    What is the difference between scipy.signal.residue() used in \textbf{Lab 6} and
+    scipy.signal.tf2zpk() used in this lab?\\
+    
+    scipy.signal.residue() is used to compute partial fraction expansion.\\
+    
+    scipy.signal.tf2zpk() is used for determining the zeros, poles, and gain of a transfer function.\\
+    
+    \item
+    Is it possible for an open-loop system to be stable? What about for a closed-loop system to be unstable? Explain how or how not for each.\\
+    
+    Both open-loop and closed-loop systems can be either stable or unstable; what determines if a system is stable or unstable is whether the system will decay (stable) or keep growing without an end (unstable).\\
+    
+    \item
+    Leave any feedback on the clarity/usefulness of the purpose, deliverables, and expectations for this lab.\\
+    The lab instructions were clear and precise. 
+
+\end{enumerate}
+%===========================================================   
+\section{Conclusion}\label{sec:res}
+    
+    By completing the lab we have learned how to judge a system stability by looking at its factored form. We have also familiarized ourselves with Laplace-domain block diagrams and the use of the scipy.signal.tf2zpk() function.
+ 
+%\lipsum[7-8]\cite{knuthwebsite}
+%===========================================================
+%===========================================================
+\bibliographystyle{ieeetr}
+\bibliography{refs}
+\end{document} 
