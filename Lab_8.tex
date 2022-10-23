@@ -1,0 +1,215 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,english]{babel}
+\usepackage{alphabeta} 
+\usepackage[pdftex]{graphicx}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\linespread{1.06}
+\setlength{\parskip}{8pt plus2pt minus2pt}
+\widowpenalty 10000
+\clubpenalty 10000
+\newcommand{\eat}[1]{}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\usepackage[official]{eurosym}
+\usepackage{enumitem}
+\setlist{nolistsep,noitemsep}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cite}
+\usepackage{lipsum}
+
+%===========================================================
+\usepackage{graphicx}
+\usepackage{listings}
+
+\renewcommand\lstlistingname{Source Code}
+
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+   backgroundcolor=\color{backcolour},   
+   commentstyle=\color{codegreen},
+   keywordstyle=\color{codeblue},
+   numberstyle=\tiny\color{codegray},
+   stringstyle=\color{codegreen},
+   basicstyle=\ttfamily\footnotesize,
+   breakatwhitespace=false,         
+   breaklines=true,                 
+   captionpos=b,                    
+   keepspaces=true,                 
+   numbers=left,                    
+   numbersep=5pt,                  
+   showspaces=false,                
+   showstringspaces=false,
+   showtabs=false,                  
+   tabsize=2
+   xleftmargin=10pt
+}
+\lstset{style=mystyle}
+
+%===========================================================
+\begin{document}
+%===========================================================
+\begin{titlepage}
+\begin{center}
+% Top 
+\includegraphics[width=0.55\textwidth]{cut-logo-en}~\\[2cm]
+% Title
+\HRule \\[0.4cm]
+{ \LARGE 
+  \textbf{Lab 8 Project Report for ECE 351}\\[0.4cm]
+  \emph{Fourier Series Approximation of a Square Wave}\\[0.4cm]
+}
+\HRule \\[1.5cm]
+% Author
+{ \large
+  Ibrahem Alobaid \\[0.1cm]
+  October 20, 2022\\[0.1cm]
+  %#\texttt{user@cut.ac.cy}
+}
+\vfill
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]\textsc{\large Department of Electrical Engineering,\\Computer Engineering \& Informatics}\\[0.4cm]
+% Bottom
+
+\end{center}
+\end{titlepage}
+%\begin{abstract}
+%\lipsum[1-2]
+%\addtocontents{toc}{\protect\thispagestyle{empty}}
+%\end{abstract}
+\newpage
+%===========================================================
+\tableofcontents
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+\newpage
+\setcounter{page}{1}
+%===========================================================
+%===========================================================
+\section{Introduction}\label{sec:intro}
+    In this lab, our purpose was to use Fourier series to approximate periodic time-domain signals.
+%===========================================================
+
+\section{Equations}\label{sec:lit-rev}
+
+In this lab, we were given the following square wave function,
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{squareWave.jpg}
+    \\ Figure 1: square wave function
+\end{figure}\textbf{}
+
+that can be represented by the Fourier series,
+
+    $$x(t) = \sum_{k=1}^{\infty} \frac{2}{k\pi} [1-cos(k\pi)]sin(k\omega_{0}t)$$
+
+where,
+    
+    $$\omega_{0} = \frac{2\pi}{T}$$
+\clearpage
+%===========================================================
+\section{Methodology and Results}\label{sec:meth}
+
+\begin{itemize}
+
+\item \textbf{Part 1}\\
+\begin{enumerate}
+
+    \item
+    For the first part, we were asked to input the expression for $a_{k}$ and $b_{k}$ into Python and print out the numerical values of $a_{0}, a_{1}, b_{1}, b_{2},$ and $ b_{3}.$\\
+
+\begin{lstlisting}[language=Python, caption={Task 1, Part 1}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== Part 1 - Task 1 ====================
+a = np.zeros((4, 1))
+b = np.zeros((4, 1))
+
+for k in np.arange(1, 4):
+    b[k] = 2/(k*np.pi) * (1-np.cos(k*np.pi))
+
+for k in np.arange(1, 4):
+    a[k] = 0
+    
+print("a_0 = ", a[0], "\na_1 = ", a[1])
+print("b_1 = ", b[1], "\nb_2 = ", b[2], "\nb_3 = ", b[3])
+\end{lstlisting}
+
+The printed values,
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.3\textwidth]{task11.jpg}
+\end{figure}\textbf{}
+
+%===========================================================
+    \item
+    Our second task was to plot the square wave Fourier series approximation for $N = \{1, 3, 15, 50, 150,1500\}$; with $T = 8s$ and plot approximation time for $0 \leq t \leq 20s$ using appropriate step size.\\
+
+\begin{lstlisting}[language=Python, caption={Task 2, Part 1}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== Part 1 - Task 2 ====================
+T = 8
+w = 2*np.pi/T
+steps = 1e-3
+t=np.arange(0 , 20 + steps , steps)
+
+N = [1, 3, 15, 50, 150, 1500]
+y = [0, 0, 0, 0, 0, 0]
+
+for i in range(len(N)):
+    for k in range(N[i]):
+        b = 2/((k+1)*np.pi) * (1-np.cos((k+1)*np.pi))
+        x = b * np.sin((k+1)*w*t)
+        
+        y[i] += x
+\end{lstlisting}
+\clearpage
+
+The resulting plots,
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{fig1.png}
+\end{figure}\textbf{}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{fig2.png}
+\end{figure}\textbf{}
+
+\end{enumerate}
+\end{itemize}
+\clearpage
+
+%===========================================================
+\section{Questions}\label{sec:res}
+\begin{enumerate}
+    \item Is x(t) an even or an odd function? Explain why.\\
+    \\$x(t)$ is odd as $x_{-n} = -x_{n}$\\
+    
+    \item Based on your results from Task 1, what do you expect the values of a2, a3, . . . , an to be? Why?\\
+    \\The values of $a_{2}, a_{3},..., a_{n}$ will all be zeroes as $x(t)$ is an odd function.\\ 
+    
+    \item How does the approximation of the square wave change as the value of N increases? In what way does the Fourier series struggle to approximate the square wave?\\
+    \\As the value of N increases, we get better approximation of the square wave.
+    \\The Fourier series struggle in that it need to sums infinite number of $N$ terms to be exact to the square wave.\\  
+    
+    \item What is occurring mathematically in the Fourier series summation as the value of N increases?\\
+    \\As the value of $N$ increases, the more sinusoidal wave we are adding together; thus, resulting in better approximation of the square wave.\\
+    
+    \item Leave any feedback on the clarity of lab tasks, expectations, and deliverables.\\
+    \\The lab instructions were clear and precise.
+\end{enumerate}
+
+%===========================================================   
+\section{Conclusion}\label{sec:res}
+    
+    By completing the lab we have learned how to use Fourier series to approximate periodic time-domain signals.
+ 
+%\lipsum[7-8]\cite{knuthwebsite}
+%===========================================================
+%===========================================================
+\bibliographystyle{ieeetr}
+\bibliography{refs}
+\end{document} 
