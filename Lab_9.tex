@@ -1,0 +1,305 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,english]{babel}
+\usepackage{alphabeta} 
+\usepackage[pdftex]{graphicx}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\linespread{1.06}
+\setlength{\parskip}{8pt plus2pt minus2pt}
+\widowpenalty 10000
+\clubpenalty 10000
+\newcommand{\eat}[1]{}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\usepackage[official]{eurosym}
+\usepackage{enumitem}
+\setlist{nolistsep,noitemsep}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cite}
+\usepackage{lipsum}
+
+%===========================================================
+\usepackage{graphicx}
+\usepackage{listings}
+
+\renewcommand\lstlistingname{Source Code}
+
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+   backgroundcolor=\color{backcolour},   
+   commentstyle=\color{codegreen},
+   keywordstyle=\color{codeblue},
+   numberstyle=\tiny\color{codegray},
+   stringstyle=\color{codegreen},
+   basicstyle=\ttfamily\footnotesize,
+   breakatwhitespace=false,         
+   breaklines=true,                 
+   captionpos=b,                    
+   keepspaces=true,                 
+   numbers=left,                    
+   numbersep=5pt,                  
+   showspaces=false,                
+   showstringspaces=false,
+   showtabs=false,                  
+   tabsize=2
+   xleftmargin=10pt
+}
+\lstset{style=mystyle}
+
+%===========================================================
+\begin{document}
+%===========================================================
+\begin{titlepage}
+\begin{center}
+% Top 
+\includegraphics[width=0.55\textwidth]{cut-logo-en}~\\[2cm]
+% Title
+\HRule \\[0.4cm]
+{ \LARGE 
+  \textbf{Lab 9 Project Report for ECE 351}\\[0.4cm]
+  \emph{Fast Fourier Transform}\\[0.4cm]
+}
+\HRule \\[1.5cm]
+% Author
+{ \large
+  Ibrahem Alobaid \\[0.1cm]
+  November 3, 2022\\[0.1cm]
+  %#\texttt{user@cut.ac.cy}
+}
+\vfill
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]\textsc{\large Department of Electrical Engineering,\\Computer Engineering \& Informatics}\\[0.4cm]
+% Bottom
+
+\end{center}
+\end{titlepage}
+%\begin{abstract}
+%\lipsum[1-2]
+%\addtocontents{toc}{\protect\thispagestyle{empty}}
+%\end{abstract}
+\newpage
+%===========================================================
+\tableofcontents
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+\newpage
+\setcounter{page}{1}
+%===========================================================
+%===========================================================
+\section{Introduction}\label{sec:intro}
+    In this lab, our purpose was to become familiar with fast Fourier transforms using Python.
+%===========================================================
+
+\section{Equations}\label{sec:lit-rev}
+
+In this lab, we were asked to plot the following signals using the fast Fourier transform method:
+
+\begin{equation}
+    x(t) = cos(2\pi t)
+\end{equation}
+
+\begin{equation}
+    x(t) = 5sin(2\pi t)
+\end{equation}
+
+\begin{equation}
+    x(t) = 2cos((2\pi \cdot 2t) -2) + sin^{2}((2\pi \cdot 6t) +3)
+\end{equation}
+
+We were also asked to plot the square wave from \textbf{Lab8} using (N = 15).
+
+\begin{equation}
+    x(t) = \sum_{n=1}^{15} \frac{2}{n\pi} [1-cos(n\pi)]sin(n\omega_{0}t)
+\end{equation}
+
+where, $\omega_{0} = \frac{2\pi}{T}$
+
+\clearpage
+%===========================================================
+\section{Methodology and Results}\label{sec:meth}
+
+\begin{itemize}
+
+\item \textbf{Part 1}\\
+\begin{enumerate}
+
+    \item
+    For the first task we were asked to plot $x(t) = cos(2\pi t)$ from $0 \leq t \leq 2s$. Also in separate subplots, we plotted the magnitude and phase of the same signal with a sampling frequency of $f_s = 100$ (we used the example code).\\
+
+\begin{lstlisting}[language=Python, caption={Task 1, Part 1}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== Part 1 - Task 1 ====================
+fs = 100
+T = 1/fs
+t = np.arange(0 , 2, T)
+
+x = np.cos(2*np.pi*t)
+freq, mag, phi = FFT(x, fs)
+\end{lstlisting}
+
+The resulted plots,
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig1.png}
+\end{figure}\textbf{}
+\clearpage
+
+%===========================================================
+    \item
+    In the second task, we were asked to repeat \textbf{Task 1} with the signal $x(t) = 5sin(2\pi t)$.\\
+    
+\begin{lstlisting}[language=Python, caption={Task 2, Part 1}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== Part 1 - Task 2 ====================
+x = 5 * np.sin(2*np.pi*t)
+freq, mag, phi = FFT(x, fs)
+\end{lstlisting}
+
+The resulted plots,
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig2.png}
+\end{figure}\textbf{}
+\clearpage
+
+%===========================================================
+    \item
+    For the third task, we repeated \textbf{Task 1} for the signal $x(t) = 2cos((2\pi \cdot 2t) - 2) + sin^2((2\pi \cdot 6t) + 3)$.\\
+    
+\begin{lstlisting}[language=Python, caption={Task 2, Part 1}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== Part 1 - Task 3 ====================
+x = 2 * np.cos((2*np.pi*2*t) - 2) + (np.sin((2*np.pi*6*t) + 3))**2
+freq, mag, phi = FFT(x, fs)
+\end{lstlisting}
+
+The resulted plots,
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig3.png}
+\end{figure}\textbf{}
+\clearpage
+
+%===========================================================
+    \item
+    For the forth task, we were asked to modify the given code (example code for Fast Fourier Transform (FFT)) so that we can read the phase plots. After modifying the (FFT) code we plotted the signals from \textbf{Task 1, 2, 3} with the new (FFT) function.\\
+
+\begin{lstlisting}[language=Python, caption={Task 2, Part 1}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== Part 1 - Task 4 ====================
+def newFFT(x, fs):
+    N = len(x)
+    X_fft = sfft.fft(x)
+    X_fft_shifted = sfft.fftshift(X_fft)
+    
+    freq = np.arange(-N/2, N/2) * fs/N
+    
+    X_mag = np.abs(X_fft_shifted)/N
+    X_phi = np.angle(X_fft_shifted)
+    
+    for i in range(len(X_phi)):
+        if np.abs(X_mag[i]) < 1e-10:
+            X_phi[i] = 0
+    return freq, X_mag, X_phi
+\end{lstlisting}
+
+The resulted plots,
+    
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig4.png}
+\end{figure}\textbf{}
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig5.png}
+\end{figure}\textbf{}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig6.png}
+\end{figure}\textbf{}
+\clearpage
+
+%===========================================================
+    \item
+    In the fifth task, we were asked to plot the Fourier series approximation of the square wave from \textbf{Lab 8} using $N = 15$, $ 0\leq t \leq16s$, and for the period we used $T = 8$. (we used the modified (FFT) function)\\
+
+\begin{lstlisting}[language=Python, caption={Task 2, Part 1}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== Part 1 - Task 5 ====================
+T1 = 8
+w = 2*np.pi/T1
+steps = 1e-3
+t=np.arange(0, 16, T)
+
+def FFTs(T,t):
+    y = 0
+    for k in range(15):
+        b = 2/((k+1)*np.pi) * (1-np.cos((k+1)*np.pi))
+        x = b * np.sin((k+1)*w*t)
+        
+        y += x
+    return y
+
+x = FFTs(T1, t)
+freq, mag, phi = newFFT(x, fs)
+\end{lstlisting} 
+
+    The resulted plots,
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig7.png}
+\end{figure}\textbf{}
+
+\end{enumerate}
+\end{itemize}
+\clearpage
+
+%===========================================================
+\section{Questions}\label{sec:res}
+
+\begin{enumerate}
+    \item
+    What happens if fs is lower? If it is higher? fs in your report must span a few orders of magnitude.\\
+    
+    \\If $f_s$ is lower, our plot in the time-domain will have less points as $T = \frac{1}{f_s}$. In addition, in the frequency-domain, we will have smaller range.\\
+    
+    \\If $f_s$ is higher, our plot in the time-domain will have more points as $T = \frac{1}{f_s}$. Also, in the frequency-domain, we will have a larger range.\\
+    
+    \item
+    What difference does eliminating the small phase magnitudes make?\\
+    
+    \\By eliminating the small phase magnitudes, we enhance the readability of large magnitudes phase.\\
+    
+    \item
+    Verify your results from Tasks 1 and 2 using the Fourier transforms of cosine and sine. Explain why your results are correct. You will need the transforms in terms of Hz, not rad/s. For example, the Fourier transform of cosine (in Hz) is:\\
+
+    $F\{cos(2\pi f_0 t)\} = \frac{1}{2}[\delta(f+1) + \delta(f-1)]$,\\
+    
+    which agrees with our plot from \textbf{Task 1} as we see that the magnitude at -1 and 1 is $\frac{1}{2}$\\
+    
+    \\$F\{5sin(2\pi f_0 t)\} = 5\cdot \frac{j}{2}[\delta(f+1)-\delta(f-1)],$\\
+    
+    which agrees with our plot from \textbf{Task 2} as we see that the magnitude at -1 and 1 is $\frac{5}{2}$\\
+    
+    
+    \item
+    Leave any feedback on the clarity of lab tasks, expectations, and deliverables.\\
+    \\The lab purpose, deliverable, and tasks were clear and precise.
+    
+\end{enumerate}
+
+%===========================================================   
+\section{Conclusion}\label{sec:res}
+    
+    By completing the lab we have learned how to use the fast Fourier transforms method.
+ 
+%\lipsum[7-8]\cite{knuthwebsite}
+%===========================================================
+%===========================================================
+\bibliographystyle{ieeetr}
+\bibliography{refs}
+\end{document} 
