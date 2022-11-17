@@ -1,0 +1,224 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,english]{babel}
+\usepackage{alphabeta} 
+\usepackage[pdftex]{graphicx}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\linespread{1.06}
+\setlength{\parskip}{8pt plus2pt minus2pt}
+\widowpenalty 10000
+\clubpenalty 10000
+\newcommand{\eat}[1]{}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\usepackage[official]{eurosym}
+\usepackage{enumitem}
+\setlist{nolistsep,noitemsep}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cite}
+\usepackage{lipsum}
+
+%===========================================================
+\usepackage{graphicx}
+\usepackage{listings}
+
+\renewcommand\lstlistingname{Source Code}
+
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+   backgroundcolor=\color{backcolour},   
+   commentstyle=\color{codegreen},
+   keywordstyle=\color{codeblue},
+   numberstyle=\tiny\color{codegray},
+   stringstyle=\color{codegreen},
+   basicstyle=\ttfamily\footnotesize,
+   breakatwhitespace=false,         
+   breaklines=true,                 
+   captionpos=b,                    
+   keepspaces=true,                 
+   numbers=left,                    
+   numbersep=5pt,                  
+   showspaces=false,                
+   showstringspaces=false,
+   showtabs=false,                  
+   tabsize=2
+   xleftmargin=10pt
+}
+\lstset{style=mystyle}
+
+%===========================================================
+\begin{document}
+%===========================================================
+\begin{titlepage}
+\begin{center}
+% Top 
+\includegraphics[width=0.55\textwidth]{cut-logo-en}~\\[2cm]
+% Title
+\HRule \\[0.4cm]
+{ \LARGE 
+  \textbf{Lab 11 Project Report for ECE 351}\\[0.4cm]
+  \emph{Z - Transform Operations}\\[0.4cm]
+}
+\HRule \\[1.5cm]
+% Author
+{ \large
+  Ibrahem Alobaid \\[0.1cm]
+  November 17, 2022\\[0.1cm]
+  %#\texttt{user@cut.ac.cy}
+}
+\vfill
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]\textsc{\large Department of Electrical Engineering,\\Computer Engineering \& Informatics}\\[0.4cm]
+% Bottom
+
+\end{center}
+\end{titlepage}
+%\begin{abstract}
+%\lipsum[1-2]
+%\addtocontents{toc}{\protect\thispagestyle{empty}}
+%\end{abstract}
+\newpage
+%===========================================================
+\tableofcontents
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+\newpage
+\setcounter{page}{1}
+%===========================================================
+%===========================================================
+\section{Introduction}\label{sec:intro}
+    In this lab, our purpose was to analyze discrete system using built-in functions and Christopher Felton developed function.
+%===========================================================
+
+\section{Equations}\label{sec:lit-rev}
+
+    In this lab we were asked to consider the following causal function,
+
+    $$y[k] = 2x[k] - 40x[k-1] + 10y[k-1] - 16y[k-2],$$
+    
+    where $y[k]$ is the output and x[k] is the input.
+
+%===========================================================
+\section{Methodology and Results}\label{sec:meth}
+
+\begin{itemize}
+
+\item \textbf{Part 1}\\
+\begin{enumerate}
+
+    \item
+    For the first task we were asked to find $H(z)$ of the given causal function (shown in the equation section). 
+    
+    $$Y(z)(1 - 10Z^{-1} + 16z^{-2}) = X(z)(2 - 40z^{-1})$$
+    
+    $$H(z) = \frac{2z(z-20)}{z^2 - 10z +16}$$
+    
+    $$\frac{H(z)}{z} = \frac{2(z-20)}{z^2 - 10z +16}$$
+    
+    $$H(z) = \frac{6z}{z-2} - \frac{4z}{z-8}$$\\
+%===========================================================
+
+    \item 
+    For the second task we found $h[k]$ by partial fraction expansion.
+    
+    $$h[k] = [6(2)^k - 4(8)^k]u[k]$$
+\clearpage
+%===========================================================
+
+    \item
+    In the third task we verified our result of $h[k]$ by using the scipy.signal.residuez() function.
+
+\begin{lstlisting}[language=Python, caption={Task 3, Part 1}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== Part 1 - Task 3 ====================
+Num = [2, -40]
+Den = [1, -10, 16]
+
+R, P, K = sig.residuez(Num, Den)
+
+print("H(z): using scipy.signal.residuez() function")
+print("Residue = ", R, "\nPoles = ", P, "\nK = ", K)
+\end{lstlisting}
+
+The printed result,
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{r1.jpg}
+\end{figure}\textbf{}
+%===========================================================
+
+    \item
+    For the fourth task we used the zplane() function to get the pole-zero plot for $H(z)$.
+
+\begin{lstlisting}[language=Python, caption={Task 4, Part 1}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== Part 1 - Task 4 ====================
+NumZ = [2, -40]
+DenZ = [1, -10, 16]
+
+Z, P, K = zplane(NumZ, DenZ)
+
+print("\nH(z): using zplane() function")
+print("Zeros = ", Z, "\nPoles = ", P, "\nK = ", K)
+\end{lstlisting}
+
+Resulted plot and printed value,
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{fig1.png}
+\end{figure}\textbf{}
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{r2.jpg}
+\end{figure}\textbf{}
+%===========================================================
+
+    \item
+    In the fifth task we used scipy.signal.freqz() to get the mamgnitude and phase response of $H(z)$.
+
+\begin{lstlisting}[language=Python, caption={Task 5, Part 1}, label={lst:code}, mathescape=true, breaklines=true]
+# ==================== Part 1 - Task 5 ====================
+w, h = sig.freqz(NumZ, DenZ, whole = True)
+
+magDB = 20*np.log10(np.abs(h))
+phase = np.angle(h)*180/np.pi
+f = w/(2*np.pi)
+\end{lstlisting}
+
+The resulted plot,
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{fig2.png}
+\end{figure}\textbf{}
+\end{enumerate}   
+\end{itemize}
+
+%===========================================================
+\section{Questions}\label{sec:res}
+\begin{enumerate}
+    \item 
+    Looking at the plot generated in Task 4, is H(z) stable? Explain why or why not.\\
+    
+    \\From the plot shown in (\textbf{Task 4}), we see that $H(z)$ is unstable as the poles are negative (shown to the right of the circle).\\
+    
+    \item Leave any feedback on the clarity of lab tasks, expectations, and deliverables.\\
+    
+    \\The lab instructions were clear and precise.
+\end{enumerate}
+
+%===========================================================   
+\section{Conclusion}\label{sec:res}
+    
+    By completing the lab we have became familiar with how to analyze discrete system using Christopher Felton function and Python built-in functions.
+ 
+%\lipsum[7-8]\cite{knuthwebsite}
+%===========================================================
+%===========================================================
+\bibliographystyle{ieeetr}
+\bibliography{refs}
+\end{document} 
