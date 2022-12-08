@@ -1,0 +1,297 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,english]{babel}
+\usepackage{alphabeta} 
+\usepackage[pdftex]{graphicx}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\linespread{1.06}
+\setlength{\parskip}{8pt plus2pt minus2pt}
+\widowpenalty 10000
+\clubpenalty 10000
+\newcommand{\eat}[1]{}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\usepackage[official]{eurosym}
+\usepackage{enumitem}
+\setlist{nolistsep,noitemsep}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cite}
+\usepackage{lipsum}
+
+%===========================================================
+\usepackage{graphicx}
+\usepackage{listings}
+
+\renewcommand\lstlistingname{Source Code}
+
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codeblue}{rgb}{0,0,0.95}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+   backgroundcolor=\color{backcolour},   
+   commentstyle=\color{codegreen},
+   keywordstyle=\color{codeblue},
+   numberstyle=\tiny\color{codegray},
+   stringstyle=\color{codegreen},
+   basicstyle=\ttfamily\footnotesize,
+   breakatwhitespace=false,         
+   breaklines=true,                 
+   captionpos=b,                    
+   keepspaces=true,                 
+   numbers=left,                    
+   numbersep=5pt,                  
+   showspaces=false,                
+   showstringspaces=false,
+   showtabs=false,                  
+   tabsize=2
+   xleftmargin=10pt
+}
+\lstset{style=mystyle}
+
+%===========================================================
+\begin{document}
+%===========================================================
+\begin{titlepage}
+\begin{center}
+% Top 
+\includegraphics[width=0.55\textwidth]{cut-logo-en}~\\[2cm]
+% Title
+\HRule \\[0.4cm]
+{ \LARGE 
+  \textbf{Lab 12 Project Report for ECE 351}\\[0.4cm]
+  \emph{Filter Design}\\[0.4cm]
+}
+\HRule \\[1.5cm]
+% Author
+{ \large
+  Ibrahem Alobaid \\[0.1cm]
+  December 8, 2022\\[0.1cm]
+  %#\texttt{user@cut.ac.cy}
+}
+\vfill
+%\textsc{\Large Cyprus University of Technology}\\[0.4cm]\textsc{\large Department of Electrical Engineering,\\Computer Engineering \& Informatics}\\[0.4cm]
+% Bottom
+
+\end{center}
+\end{titlepage}
+%\begin{abstract}
+%\lipsum[1-2]
+%\addtocontents{toc}{\protect\thispagestyle{empty}}
+%\end{abstract}
+\newpage
+%===========================================================
+\tableofcontents
+\addtocontents{toc}{\protect\thispagestyle{empty}}
+\newpage
+\setcounter{page}{1}
+%===========================================================
+%===========================================================
+\section{Introduction}\label{sec:intro}
+
+    In this lab, our purpose was to filter a noisy signal. A position sensor signal is given to a positioning control system of an aircraft. Due to noise on the sensor signal, the positioning system is not receiving accurate reading. 
+    
+    The position measurement information is indicated to be in the range of $1.8kHz \leq f \leq 2.0kHz$. We are tasked to first identify the following:
+    
+\begin{itemize}
+    \item
+    Magnitudes and corresponding frequencies of the position measurement information.\\
+    
+    \item 
+    Noise magnitudes and corresponding frequencies due to low frequency vibrations.\\
+    
+    \item
+    Noise magnitudes and corresponding frequencies due to switching amplifier.\\
+\end{itemize}
+    
+    Our second task is to filter the noisy signal, passing only the position measurement information. Our filter circuit required the following specifications:
+    
+\begin{itemize}
+    \item 
+    The position measurement information is attenuated by less than -0.3dB\\
+    
+    \item
+    The low-frequency vibration noise must be attenuated by at least -30dB\\
+
+    \item
+    The switching amplifier noise must be attenuated by at least -21dB\\
+
+    \item
+    All noise that exists at frequencies greater than 100kHz must be completely attenuated (magnitudes less than 0.05V can be considered completely attenuated for all practical purposes in this situation)
+\end{itemize}
+\clearpage
+%===========================================================
+
+\section{Equations}\label{sec:lit-rev}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f1.png}
+    \\Figure 1: Band-pass filter ($R = 1.3K\Omega,\ L = 1H,\ C = 7nF$)
+\end{figure}\textbf{}
+    The transfer function of the RLC circuit is,
+    
+    $$H(s) = \frac{k\beta s}{s^2 + \beta s + w_0^2} = \frac{(\frac{R}{L})s}{s^2 + (\frac{R}{L})s + \frac{1}{LC}}$$
+    
+    To design the RLC circuit, the inductor value was assumed to be $L = 1H$, corner frequencies were set to be $f_{c1} = 1.8kHz,\ f_{c2} = 2.0kHz$, and the following equations were used:
+
+\begin{equation}
+    w_c = 2\pi f_c
+\end{equation}
+
+\begin{equation}
+    w_0 = \sqrt{w_{c1} \cdot w_{c2}}
+\end{equation}
+
+\begin{equation}
+    \beta = w_{c2} - w_{c1}
+\end{equation}
+
+\begin{equation}
+    w_0^2 = \frac{1}{LC}
+\end{equation}
+
+\begin{equation}
+    \beta = \frac{R}{L}
+\end{equation}
+
+\clearpage
+%===========================================================
+\section{Methodology and Results}\label{sec:meth}
+
+\begin{itemize}
+    \item 
+    Noisy signal plots:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f2.png}
+    \\Figure 2: Sensor signal
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f3.png}
+    \\Figure 3
+\end{figure}
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f4.png}
+    \\Figure 4: Position measurements information
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f5.png}
+    \\Figure 5: Noise due to low frequency vibrations
+\end{figure}
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f6.png}
+    \\Figure 6: Noise due to switching amplifier
+\end{figure}
+%===========================================================
+
+    \item
+    Filter characteristics plots:
+    
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f7.png}
+    \\Figure 7
+\end{figure}
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f8.png}
+    \\Figure 8: Frequencies of position measurements information
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f9.png}
+    \\Figure 9: Frequencies of Low-frequency vibrations
+\end{figure}
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f10.png}
+    \\Figure 10: Frequencies of switching amplifier
+\end{figure}
+%===========================================================
+
+    \item
+    Filtered signal plots:
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f11.png}
+    \\Figure 11: Filtered sensor signal
+\end{figure}    
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f12.png}
+    \\Figure 12
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f13.png}
+    \\Figure 13: Filtered position measurements information
+\end{figure}  
+\clearpage
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f14.png}
+    \\Figure 14: Filtered low-frequency noise 
+\end{figure} 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{f15.png}
+    \\Figure 15: Filtered high-frequency noise
+\end{figure}
+\clearpage
+\end{itemize}
+
+%===========================================================
+\section{Questions}\label{sec:res}
+
+\begin{enumerate}
+    \item  
+    Earlier this semester, you were asked what you personally wanted to get out of taking this course. Do you feel like that personal goal was met? Why or why not?\\
+    
+    I have check my \textbf{Lab 0}, and for some reason my answer was to be setup for next lab, so yes, I do feel like I have met that goal. Other than that, I feel comfortable using LATEX and Python which I have wanted to learn about.\\
+    
+    \item
+    Please fill out the course feedback survey, I will read every word and very much appreciate the feedback.\\ 
+    
+    Will do.\\
+    
+    \item
+    Good luck in the rest of your education and career!\\
+    
+    Thanks! Good luck to you too.
+
+\end{enumerate}
+
+%===========================================================   
+\section{Conclusion}\label{sec:res}
+    By completing the lab we have used many of the skills we learned about Python during the semester to characterize a noisy signal, design and characterize an RLC circuit to meet a given specifications, and filter out the noisy signal.
+ 
+%\lipsum[7-8]\cite{knuthwebsite}
+%===========================================================
+%===========================================================
+\bibliographystyle{ieeetr}
+\bibliography{refs}
+\end{document} 
